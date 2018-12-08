@@ -1,0 +1,120 @@
+/* 撑开整个空间 */
+.topic-main{
+	max-width:100%!important;
+}
+
+.tabs-tabpane {
+	display: flex;
+}
+
+.tabs-tabpane>div>div{
+	display:flex;
+	flex-wrap:wrap;
+}
+
+/* tab 宽度控制 */
+.tabs{
+	width:100%;
+}
+
+.tabs-bar{
+	margin-left:5px;
+	width:100%;
+	max-width:1117px!important;
+}
+
+/* 隐藏掉左边的主题 */
+.topic-left{
+	display:none;
+}
+
+/* 卡片容器宽度，边距，高度 */
+.message-card-container,.user-activity-container{
+	width:32%;
+	margin:0.5%;
+	min-height:500px;
+}
+
+.message-card,.user-activity{
+	height:100%;
+	position:relative;
+}
+/* 隐藏主题名称，头像 */
+.message-card-header-left,.topic-name,.post-time{
+	display:none;
+}
+
+.user-activity-header-left{
+	display: none;
+}
+
+/* 将左侧边距改为0 */
+.message-card-header-main,.message-card-body,.message-card-footer{
+	margin-left:0!important;
+}
+
+.user-activity-header,.user-activity-body,.user-activity-footer,.user-activity-header-main{
+	margin-left:0!important;
+}
+
+/* 隐藏多图 */
+.picture-list>.pic-group.is-flex{
+	min-height:300px;
+	margin-top:10px;
+	display:block;
+}
+
+.pic-group .pic-item{
+	display:none;
+}
+
+.pic-group>.pic-item:first-child{
+	width:100%;
+	display:block;
+	height:300px;
+}
+
+/* 第一张大图重点显示 */
+.pic-group>.pic-item:first-child>.pic-item-content{
+	background:rgba(0,0,0,0.03)!important;
+	box-shadow: none!important;
+	overflow-y:hidden;
+	width:100%!important;
+	height:300px!important;
+}
+/* 图片按比例展示 */
+.picture-list .pic-item.is-single img,.picture-list .pic-item img{
+	width:auto!important;
+	height:auto!important;
+	max-width: 100%;
+	max-height: 100%;
+}
+
+/* footer定位到最下面 */
+.message-card-footer,.user-activity-footer{
+	position:absolute;
+	bottom:20px;
+	width:100%;
+	padding-bottom:0!important;
+}
+
+/* 阅读文本定位 */
+.readable-content{
+	position:absolute;
+	top:370px;
+	min-width:90%;
+	max-width:319px;
+	max-height:80px;
+	overflow-y:auto;
+}
+/* 阅读文本滚动条 */
+.readable-content::-webkit-scrollbar{
+	background:rgba(0,0,0,0.03);
+	width:2px;
+}
+
+.readable-content::-webkit-scrollbar-thumb{
+	width:2px;
+	background:#ffe411;
+}
+

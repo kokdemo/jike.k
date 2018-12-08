@@ -1,0 +1,45 @@
+{
+    "name": "jike.k",
+    "version": "0.0.1",
+    "manifest_version": 2,
+    "description": "一个让你看的更方便的即刻扩展，作者@kokdemo",
+    "homepage_url":"https://github.com/kokdemo/jike.k",
+    "icons": { 
+        "16": "jike16.png",
+        "48": "jike48.png",
+        "128": "jike128.png"
+    },
+    "background":{
+        "scripts":["background.js"],
+        "persistent":false
+    },
+    "content_scripts": [ 
+        {
+            "matches": [
+                "https://web.okjike.com/topic/556688fae4b00c57d9dd46ee/*",
+                "https://web.okjike.com/topic/57b86fb59b06f01200f89410/*",
+                "https://web.okjike.com/topic/5b67fbd3a7d6a90017630366/*",
+                "https://web.okjike.com/topic/5b6a90ec69f2e00017b0bb17/*",
+                "https://web.okjike.com/topic/5b7d2e3aaa31960017c5a206/*",
+                "https://web.okjike.com/topic/5b6a907bc0798a00176cf893/*",
+                "https://web.okjike.com/topic/5740760391dbb11100594646/*",
+                "https://web.okjike.com/topic/56ac86b95761ff120077b341/*"
+            ],
+            "css": [
+                "jike.css"
+            ],
+            "js": [
+                "jike.js"
+            ],
+            "all_frames": true,
+            "run_at": "document_idle"
+        }
+    ],
+    "permissions": [
+        "cookies",
+        "notifications",
+        "activeTab",
+        "storage",
+        "tabs"
+    ]
+}

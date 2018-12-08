@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        html{
+            width: 100px;
+            height: 150px;
+        }
+        body,ul{
+            margin: 0;
+            padding: 0;
+        }
+        li{
+            height: 50px;
+            list-style: none;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+            line-height: 50px;
+            font-size: 14px;
+        }
+        li.active{
+            color: #61aeee;
+        }
+        li:hover{
+            background-color: #eee;
+        }
+    </style>
+    <script src="popup.js"></script>
+</head>
+
+<body>
+    <ul>
+        <li id="auto">自动模式</li>
+        <li id="on">全部打开</li>
+        <li id="off">全部关闭</li>
+    </ul>
+    
+</body>
+
+</html>
