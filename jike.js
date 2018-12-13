@@ -9,6 +9,10 @@ var topics = {
     '56ac86b95761ff120077b341':{name:'随手拍张照'},
     '5a1ccd886b3e9800116b7fe9':{name:'此刻的天空'}
 }
+// 获取列表名单
+chrome.storage.sync.get('topic', function(response) {
+    console.info(response)
+  });
 
 // 获取url，判断是否要加载css
 var regex = /topic+\/\w+/;
@@ -21,8 +25,12 @@ if(topics.hasOwnProperty(id) == true){
         var topicName = topic.childNodes[0].innerText;
         var tab = document.getElementsByClassName('tab-title')[0];
         tab.innerText = topicName +" "+ tab.innerText;
+        // 修改tab
+        var switchDom = document.getElementsByClassName('row no-margin end-xs middle-xs is-flex middle-xs')[0].children[0];
+        switchDom.outerHTML = '<span class="header-item hidden-xs">切换</a>';
     });
 }else{
     console.log('当前页面不加载jike.k');
 }
+
 
