@@ -1,36 +1,84 @@
-var topics = {
-    '556688fae4b00c57d9dd46ee':{name:'今日份的摄影'},
-    '57b86fb59b06f01200f89410':{name:'街头摄影扫街组'},
-    '5b67fbd3a7d6a90017630366':{name:'人文纪实摄影组'},
-    '5b6a90ec69f2e00017b0bb17':{name:'一起拍建筑'},
-    '5b7d2e3aaa31960017c5a206':{name:'一起拍写真'},
-    '5b6a907bc0798a00176cf893':{name:'一起拍星空'},
-    '5740760391dbb11100594646':{name:'摄影鉴赏会'},
-    '56ac86b95761ff120077b341':{name:'随手拍张照'},
-    '5a1ccd886b3e9800116b7fe9':{name:'此刻的天空'}
-}
-// 获取列表名单
-chrome.storage.sync.get('topic', function(response) {
-    console.info(response)
-  });
+whenReady = (function() {
+    var funcs = [],
+        ready = false;
+    function handler(e) {
+      if (ready) {
+        return;
+      }
+      if (e.type === 'onreadystatechange' && document.readyState !== 'complete') {
+        return;
+      }
+      var i = 0;
+      for (i = 0; i < funcs.length; i++) {
+        funcs[i].call(document);
+      }
+      ready = true;
+      funcs = null;
+    }
+    if (document.addEventListener) {
+      document.addEventListener('DOMContentLoaded', handler, false);
+      document.addEventListener('readystatechange', handler, false); // IE9+
+      window.addEventListener('load', handler, false);
+    } else if (document.attachEvent) {
+      document.attachEvent('onreadystatechange', handler);
+      window.attachEvent('onload', handler);
+    }
+    return function(fn) {
+      if (ready) {
+        fn.call(document);
+      } else {
+        funcs.push(fn);
+      }
+    };
+})();
 
-// 获取url，判断是否要加载css
+
+// 获取url
 var regex = /topic+\/\w+/;
-var id = regex.exec(window.location.pathname)[0].split('/')[1];
-console.log(topics.hasOwnProperty(id));
-if(topics.hasOwnProperty(id) == true){
-    chrome.runtime.sendMessage({command: "insertCss"}, function(response) {
-        // 给精选的标题增加title
-        var topic = document.getElementsByClassName('topic-info-main')[0];
-        var topicName = topic.childNodes[0].innerText;
-        var tab = document.getElementsByClassName('tab-title')[0];
-        tab.innerText = topicName +" "+ tab.innerText;
-        // 修改tab
-        var switchDom = document.getElementsByClassName('row no-margin end-xs middle-xs is-flex middle-xs')[0].children[0];
-        switchDom.outerHTML = '<span class="header-item hidden-xs">切换</a>';
+var topicID = regex.exec(window.location.pathname)[0].split('/')[1];
+whenReady(function(){
+    topicInit();
+})
+
+// 获取列表名单
+function topicInit(){
+    chrome.storage.sync.get('topic', function(response) {
+        // 判断是否要加载css
+        console.log(response);
+        if(response.topic.hasOwnProperty(topicID) && response.topic[topicID].status){
+            // 如果在名单内，发送插入 css 的指令，给页面加入 dom
+            chrome.runtime.sendMessage({command: "insertCss"}, function(response) {
+                addTitle()
+            });
+        }else{
+            console.log('当前页面不加载jike.k');
+        }
+        addNav()
     });
-}else{
-    console.log('当前页面不加载jike.k');
 }
 
 
+function addTitle(){
+    // 给精选的标题增加title
+    let topic = document.getElementsByClassName('topic-info-main')[0];
+    let topicName = topic.childNodes[0].innerText;
+    let tab = document.getElementsByClassName('tab-title')[0];
+    tab.innerText = topicName +" "+ tab.innerText;
+}
+
+function addNav(){
+    // 修改顶部tab
+    let switchDom = document.getElementsByClassName('row no-margin end-xs middle-xs is-flex middle-xs')[0].children[0];
+    switchDom.outerHTML = '<span class="header-item hidden-xs" id="switchDom">切换</a>';
+    document.getElementById('switchDom').addEventListener('click',switchStatus)
+    console.log('nav success')
+}
+
+function switchStatus(){
+    let topic = document.getElementsByClassName('topic-info-main')[0];
+    let topicName = topic.childNodes[0].innerText;
+    // 切换状态，修改 storage 中的数据，然后刷新页面
+    chrome.runtime.sendMessage({command: "switchTopic",topicID:topicID,topicName:topicName}, function(response) {
+        window.location.reload()
+    })
+}

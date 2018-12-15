@@ -11,30 +11,65 @@ var initTopicList = {
 }
 
 
-chrome.runtime.onStartup.addListener(
+chrome.runtime.onInstalled.addListener(
     function(){
-        chrome.storage.sync.set({'topic': initTopicList}, function() {
-            console.info('初始化完成，初始topic数据已写入')
-        });
+        chrome.storage.sync.get('topic',function(res){
+            if(chrome.runtime.lastError){
+                console.info(chrome.runtime.lastError)
+                chrome.storage.sync.set({'topic': initTopicList}, function() {
+                    console.info('初始化完成，初始topic数据已写入')
+                });
+            }else{
+                console.info('topic读取数据')
+                console.info(res)
+            }
+        })
     }
 )
-
 
 chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
         console.log(sender.tab ? "待注入页面ID:" + sender.tab.id : "from the extension");
-        // 如果指令是注入css
-        if (request.command == "insertCss"){
-            chrome.tabs.insertCSS(sender.tab.id,{ file: 'jike.css'}, function () {
-                if (chrome.runtime.lastError) {
-                    console.info(chrome.runtime.lastError)
-                    sendResponse({ response: "jike.k 加载失败" });
-                } else {
-                    sendResponse({ response: "jike.k 加载成功" });
-                }
-            })
-        }else{
-            sendResponse({ response: "jike.k 加载成功，css未注入" });
+        switch(request.command){
+            case "insertCss":
+                insertCSS(sender.tab.id,sendResponse)
+                break;
+            case "switchTopic":
+                switchTopic(request.topicID,request.topicName,sendResponse)
+                break;
+            default:
+                sendResponse({ response: "jike.k 加载成功，css未注入" });
         }
     }
 );
+
+function insertCSS(tabID,sendResponse){
+    chrome.tabs.insertCSS(tabID,{ file: 'jike.css'}, function () {
+        if (chrome.runtime.lastError) {
+            console.info(chrome.runtime.lastError)
+            sendResponse({ response: "jike.k 加载失败" });
+        } else {
+            sendResponse({ response: "jike.k 加载成功" });
+        }
+    })
+}
+
+function switchTopic(topicID,topicName,sendResponse){
+    console.info(topicID + topicName)
+    chrome.storage.sync.get('topic',function(response){
+        if(response.topic.hasOwnProperty(topicID)){
+            console.info(response.topic[topicID])
+            // 如果数据中包含已知主题，切换状态
+            response.topic[topicID].status = !response.topic[topicID].status
+            sendResponse({ response: "jike.k 主题状态切换成功" });
+        }else{
+            // 之前不包含已知主题，新增
+            response.topic[topicID] = {name:topicName,status:true};
+            sendResponse({ response: "jike.k 主题添加到主题中" });
+        }
+        console.log(response)
+        chrome.storage.sync.set({'topic': response.topic}, function() {
+            console.info('topic 数据已经更新')
+        });
+    })
+}
