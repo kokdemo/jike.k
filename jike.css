@@ -58,10 +58,15 @@
 }
 
 /* 隐藏多图 */
-.picture-list>.pic-group.is-flex{
-	min-height:300px;
-	margin-top:10px;
+.picture-list .pic-group{
+	display:none;
+}
+
+.picture-list .pic-group:first-child,.picture-list .pic-group.is-flex:first-child{
+	width:100%;
 	display:block;
+	margin-top:10px;
+	height:300px;
 }
 
 .pic-group .pic-item{
