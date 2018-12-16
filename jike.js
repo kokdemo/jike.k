@@ -44,16 +44,24 @@ whenReady(function(){
 function topicInit(){
     chrome.storage.sync.get('topic', function(response) {
         // 判断是否要加载css
-        console.log(response);
-        if(response.topic.hasOwnProperty(topicID) && response.topic[topicID].status){
-            // 如果在名单内，发送插入 css 的指令，给页面加入 dom
-            chrome.runtime.sendMessage({command: "insertCss"}, function(response) {
-                addTitle()
-            });
+        if(response.hasOwnProperty('topic')){
+            // 说明有数据
+            if(response.topic.hasOwnProperty(topicID) && response.topic[topicID].status){
+                // 如果在名单内，发送插入 css 的指令，给页面加入 dom
+                chrome.runtime.sendMessage({command: "insertCss"}, function(response) {
+                    addTitle()
+                    addNav(true)
+                });
+            }else{
+                console.log('当前页面不加载jike.k');
+                addNav(false)
+            }
         }else{
-            console.log('当前页面不加载jike.k');
-        }
-        addNav()
+            // 没数据，请求后台初始化
+            chrome.runtime.sendMessage({command: "initData"}, function(response) {
+                window.location.reload()
+            });
+        }  
     });
 }
 
@@ -66,12 +74,18 @@ function addTitle(){
     tab.innerText = topicName +" "+ tab.innerText;
 }
 
-function addNav(){
+function addNav(status){
     // 修改顶部tab
     let switchDom = document.getElementsByClassName('row no-margin end-xs middle-xs is-flex middle-xs')[0].children[0];
-    switchDom.outerHTML = '<span class="header-item hidden-xs" id="switchDom">切换</a>';
+    if(status){
+        // 如果页面需要加载 css
+        switchDom.outerHTML = '<span class="header-item hidden-xs header-item-icon nav-switch-on" id="switchDom"></span>';
+    }else{
+        // 页面不需要加载 css
+        switchDom.outerHTML = '<span class="header-item hidden-xs header-item-icon nav-switch-off" id="switchDom" style="background:url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgaGVpZ2h0PSIxNHB4IiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxOSAxNCIgd2lkdGg9IjE5cHgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6c2tldGNoPSJodHRwOi8vd3d3LmJvaGVtaWFuY29kaW5nLmNvbS9za2V0Y2gvbnMiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj48dGl0bGUvPjxkZXNjLz48ZGVmcy8+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBpZD0iUGFnZS0xIiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSI+PGcgZmlsbD0iIzAwMDAwMCIgaWQ9IkNvcmUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC04Ny4wMDAwMDAsIC01MDkuMDAwMDAwKSI+PGcgaWQ9InZpZXctbGlzdCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoODcuNTAwMDAwLCA1MDkuMDAwMDAwKSI+PHBhdGggZD0iTTAsOSBMNCw5IEw0LDUgTDAsNSBMMCw5IEwwLDkgWiBNMCwxNCBMNCwxNCBMNCwxMCBMMCwxMCBMMCwxNCBMMCwxNCBaIE0wLDQgTDQsNCBMNCwwIEwwLDAgTDAsNCBMMCw0IFogTTUsOSBMMTcsOSBMMTcsNSBMNSw1IEw1LDkgTDUsOSBaIE01LDE0IEwxNywxNCBMMTcsMTAgTDUsMTAgTDUsMTQgTDUsMTQgWiBNNSwwIEw1LDQgTDE3LDQgTDE3LDAgTDUsMCBMNSwwIFoiIGlkPSJTaGFwZSIvPjwvZz48L2c+PC9nPjwvc3ZnPg==) no-repeat center/60%"></span>';
+    }
+    
     document.getElementById('switchDom').addEventListener('click',switchStatus)
-    console.log('nav success')
 }
 
 function switchStatus(){

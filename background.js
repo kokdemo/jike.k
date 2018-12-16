@@ -16,9 +16,7 @@ chrome.runtime.onInstalled.addListener(
         chrome.storage.sync.get('topic',function(res){
             if(chrome.runtime.lastError){
                 console.info(chrome.runtime.lastError)
-                chrome.storage.sync.set({'topic': initTopicList}, function() {
-                    console.info('初始化完成，初始topic数据已写入')
-                });
+                initData()
             }else{
                 console.info('topic读取数据')
                 console.info(res)
@@ -37,11 +35,20 @@ chrome.runtime.onMessage.addListener(
             case "switchTopic":
                 switchTopic(request.topicID,request.topicName,sendResponse)
                 break;
+            case "initData":
+                initData();
+                break;
             default:
                 sendResponse({ response: "jike.k 加载成功，css未注入" });
         }
     }
 );
+
+function initData(){
+    chrome.storage.sync.set({'topic': initTopicList}, function() {
+        console.info('初始化完成，初始topic数据已写入')
+    });
+}
 
 function insertCSS(tabID,sendResponse){
     chrome.tabs.insertCSS(tabID,{ file: 'jike.css'}, function () {
