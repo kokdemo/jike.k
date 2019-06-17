@@ -24,7 +24,7 @@ chrome.runtime.onInstalled.addListener(
         })
     }
 )
-
+// 监听页面发来的参数
 chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
         console.log(sender.tab ? "待注入页面ID:" + sender.tab.id : "from the extension");
@@ -37,6 +37,9 @@ chrome.runtime.onMessage.addListener(
                 break;
             case "initData":
                 initData();
+                break;
+            case "fixDropDownMenu":
+                fixDropdownMenu(sender.tab.id,sendResponse);
                 break;
             default:
                 sendResponse({ response: "jike.k 加载成功，css未注入" });
@@ -78,5 +81,16 @@ function switchTopic(topicID,topicName,sendResponse){
         chrome.storage.sync.set({'topic': response.topic}, function() {
             console.info('topic 数据已经更新')
         });
+    })
+}
+
+function fixDropdownMenu(tabID,sendResponse){
+    chrome.tabs.insertCSS(tabID,{ file: 'fix.css'}, function () {
+        if (chrome.runtime.lastError) {
+            console.info(chrome.runtime.lastError)
+            sendResponse({ response: "jike.k 加载修复css失败" });
+        } else {
+            sendResponse({ response: "jike.k 加载修复css成功" });
+        }
     })
 }

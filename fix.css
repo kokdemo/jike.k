@@ -1,0 +1,5 @@
+/* 修复下拉菜单字数过多撑开框体的问题 */
+
+.dropdown .dropdown-menu{
+	width: 180px;
+}

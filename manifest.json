@@ -17,7 +17,8 @@
         {
             "matches": [
                 "https://web.okjike.com/topic/*",
-                "https://web.okjike.com/feed"
+                "https://web.okjike.com/feed",
+                "https://web.okjike.com/post-detail/*"
             ],
             "css": [],
             "js": [

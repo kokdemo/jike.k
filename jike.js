@@ -37,7 +37,7 @@ function routeInit() {
   let topicRegex = /topic+\/\w+/;
   let path = window.location.pathname;
   let result = { route: "", info: "" };
-  console.info(path)
+  // console.info(path)
   if (path == "/feed" || path == "/feed/message" || path == "/feed/post") {
     // 在首页
     result.route = "index"
@@ -48,20 +48,24 @@ function routeInit() {
       info: topicRegex.exec(window.location.pathname)[0].split('/')[1]
     }
   }
-  console.info(result)
+  // console.info(result)
   return result
 }
 
 // 获取url
 whenReady(function(){
   var routeRes = routeInit();
-  console.info(routeRes)
+  // console.info(routeRes)
   if (routeRes.route == "topic") {
     topicInit(routeRes.info);
-    console.info("此时在" + routeRes.route)
+    // console.info("此时在" + routeRes.route)
   } else {
-    console.info("此时在" + routeRes.route)
+    // console.info("此时在" + routeRes.route)
   }
+  // 修复下拉框问题
+  chrome.runtime.sendMessage({command: "fixDropDownMenu"}, function(response) {
+    // console.log('fix css bug')
+  });
 })
 
 // 获取列表名单
@@ -110,7 +114,6 @@ function addNav(status){
       // 页面不需要加载 css
       switchDom.outerHTML = '<span class="header-item hidden-xs header-item-icon nav-switch-off" id="switchDom" style="background:url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgaGVpZ2h0PSIxNHB4IiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxOSAxNCIgd2lkdGg9IjE5cHgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6c2tldGNoPSJodHRwOi8vd3d3LmJvaGVtaWFuY29kaW5nLmNvbS9za2V0Y2gvbnMiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj48dGl0bGUvPjxkZXNjLz48ZGVmcy8+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBpZD0iUGFnZS0xIiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSI+PGcgZmlsbD0iIzAwMDAwMCIgaWQ9IkNvcmUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC04Ny4wMDAwMDAsIC01MDkuMDAwMDAwKSI+PGcgaWQ9InZpZXctbGlzdCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoODcuNTAwMDAwLCA1MDkuMDAwMDAwKSI+PHBhdGggZD0iTTAsOSBMNCw5IEw0LDUgTDAsNSBMMCw5IEwwLDkgWiBNMCwxNCBMNCwxNCBMNCwxMCBMMCwxMCBMMCwxNCBMMCwxNCBaIE0wLDQgTDQsNCBMNCwwIEwwLDAgTDAsNCBMMCw0IFogTTUsOSBMMTcsOSBMMTcsNSBMNSw1IEw1LDkgTDUsOSBaIE01LDE0IEwxNywxNCBMMTcsMTAgTDUsMTAgTDUsMTQgTDUsMTQgWiBNNSwwIEw1LDQgTDE3LDQgTDE3LDAgTDUsMCBMNSwwIFoiIGlkPSJTaGFwZSIvPjwvZz48L2c+PC9nPjwvc3ZnPg==) no-repeat center/60%"></span>';
   }
-  
   document.getElementById('switchDom').addEventListener('click',switchStatus)
 }
 
