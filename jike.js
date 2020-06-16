@@ -51,16 +51,17 @@ function routeInit() {
   // console.info(result)
   return result
 }
-
+console.info('load')
 // 获取url
 whenReady(function(){
   var routeRes = routeInit();
-  // console.info(routeRes)
+  console.info(routeRes)
   if (routeRes.route == "topic") {
     topicInit(routeRes.info);
     // console.info("此时在" + routeRes.route)
   } else {
-    // console.info("此时在" + routeRes.route)
+    addNav(true)
+    console.info("此时在" + routeRes.route)
   }
   // 修复下拉框问题
   chrome.runtime.sendMessage({command: "fixDropDownMenu"}, function(response) {
@@ -104,17 +105,13 @@ function addTitle(){
 
 function addNav(status){
   var routeRes = routeInit();
-
   // 修改顶部tab
-  let switchDom = document.getElementsByClassName('row no-margin end-xs middle-xs is-flex middle-xs')[0].children[0];
-  if(status){
-      // 如果页面需要加载 css
-      switchDom.outerHTML = '<span class="header-item hidden-xs header-item-icon nav-switch-on" id="switchDom"></span>';
-  }else{
-      // 页面不需要加载 css
-      switchDom.outerHTML = '<span class="header-item hidden-xs header-item-icon nav-switch-off" id="switchDom" style="background:url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgaGVpZ2h0PSIxNHB4IiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxOSAxNCIgd2lkdGg9IjE5cHgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6c2tldGNoPSJodHRwOi8vd3d3LmJvaGVtaWFuY29kaW5nLmNvbS9za2V0Y2gvbnMiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj48dGl0bGUvPjxkZXNjLz48ZGVmcy8+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBpZD0iUGFnZS0xIiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSI+PGcgZmlsbD0iIzAwMDAwMCIgaWQ9IkNvcmUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC04Ny4wMDAwMDAsIC01MDkuMDAwMDAwKSI+PGcgaWQ9InZpZXctbGlzdCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoODcuNTAwMDAwLCA1MDkuMDAwMDAwKSI+PHBhdGggZD0iTTAsOSBMNCw5IEw0LDUgTDAsNSBMMCw5IEwwLDkgWiBNMCwxNCBMNCwxNCBMNCwxMCBMMCwxMCBMMCwxNCBMMCwxNCBaIE0wLDQgTDQsNCBMNCwwIEwwLDAgTDAsNCBMMCw0IFogTTUsOSBMMTcsOSBMMTcsNSBMNSw1IEw1LDkgTDUsOSBaIE01LDE0IEwxNywxNCBMMTcsMTAgTDUsMTAgTDUsMTQgTDUsMTQgWiBNNSwwIEw1LDQgTDE3LDQgTDE3LDAgTDUsMCBMNSwwIFoiIGlkPSJTaGFwZSIvPjwvZz48L2c+PC9nPjwvc3ZnPg==) no-repeat center/60%"></span>';
-  }
-  document.getElementById('switchDom').addEventListener('click',switchStatus)
+  let inferDom = document.getElementById('user-menu-downshift-menu');
+  let ref = inferDom.children[1]
+  let insertDom = document.createElement('li')
+  insertDom.innerHTML = '<span class="header-item hidden-xs header-item-icon nav-switch-off" id="switchDom" style="background:url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgaGVpZ2h0PSIxNHB4IiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxOSAxNCIgd2lkdGg9IjE5cHgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6c2tldGNoPSJodHRwOi8vd3d3LmJvaGVtaWFuY29kaW5nLmNvbS9za2V0Y2gvbnMiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj48dGl0bGUvPjxkZXNjLz48ZGVmcy8+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBpZD0iUGFnZS0xIiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSI+PGcgZmlsbD0iIzAwMDAwMCIgaWQ9IkNvcmUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC04Ny4wMDAwMDAsIC01MDkuMDAwMDAwKSI+PGcgaWQ9InZpZXctbGlzdCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoODcuNTAwMDAwLCA1MDkuMDAwMDAwKSI+PHBhdGggZD0iTTAsOSBMNCw5IEw0LDUgTDAsNSBMMCw5IEwwLDkgWiBNMCwxNCBMNCwxNCBMNCwxMCBMMCwxMCBMMCwxNCBMMCwxNCBaIE0wLDQgTDQsNCBMNCwwIEwwLDAgTDAsNCBMMCw0IFogTTUsOSBMMTcsOSBMMTcsNSBMNSw1IEw1LDkgTDUsOSBaIE01LDE0IEwxNywxNCBMMTcsMTAgTDUsMTAgTDUsMTQgTDUsMTQgWiBNNSwwIEw1LDQgTDE3LDQgTDE3LDAgTDUsMCBMNSwwIFoiIGlkPSJTaGFwZSIvPjwvZz48L2c+PC9nPjwvc3ZnPg==) no-repeat center/60%"></span>';
+  inferDom.insertBefore(insertDom,ref)
+  // document.getElementById('switchDom').addEventListener('click',switchStatus)
 }
 
 function switchStatus(){
