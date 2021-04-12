@@ -2,7 +2,7 @@
     "name": "jike.k",
     "version": "0.0.6",
     "manifest_version": 2,
-    "description": "一个让你看的更方便的即刻扩展，作者@kokdemo",
+    "description": "更好的即刻网页版浏览体验",
     "homepage_url":"https://github.com/kokdemo/jike.k",
     "icons": { 
         "16": "jike16.png",
