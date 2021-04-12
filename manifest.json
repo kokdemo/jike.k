@@ -1,6 +1,6 @@
 {
     "name": "jike.k",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "manifest_version": 2,
     "description": "一个让你看的更方便的即刻扩展，作者@kokdemo",
     "homepage_url":"https://github.com/kokdemo/jike.k",
@@ -29,11 +29,8 @@
         }
     ],
     "permissions": [
-        "cookies",
-        "notifications",
         "activeTab",
         "storage",
-        "tabs",
         "https://web.okjike.com/topic/*"
     ]
 }
