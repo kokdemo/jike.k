@@ -1,0 +1,47 @@
+.jike-k-picture-mode .topic-main {
+  max-width: 100% !important;
+}
+
+.jike-k-picture-mode .topic-left,
+.jike-k-picture-mode .message-card-header-left,
+.jike-k-picture-mode .topic-name,
+.jike-k-picture-mode .post-time,
+.jike-k-picture-mode .user-activity-header-left {
+  display: none;
+}
+
+.jike-k-picture-mode .tabs-tabpane > div > div {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.jike-k-picture-mode .message-card-container,
+.jike-k-picture-mode .user-activity-container {
+  width: auto;
+  margin: 0;
+  min-height: 0;
+}
+
+.jike-k-picture-mode .picture-list .pic-group,
+.jike-k-picture-mode .pic-group .pic-item {
+  display: none;
+}
+
+.jike-k-picture-mode .picture-list .pic-group:first-child,
+.jike-k-picture-mode .pic-group > .pic-item:first-child {
+  display: block;
+  width: 100%;
+}
+
+.jike-k-picture-mode .pic-group > .pic-item:first-child > .pic-item-content {
+  aspect-ratio: 4 / 3;
+  height: auto !important;
+  overflow: hidden;
+}
+
+.jike-k-picture-mode .picture-list .pic-item img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain;
+}
