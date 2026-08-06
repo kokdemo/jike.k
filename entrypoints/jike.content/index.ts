@@ -1,12 +1,14 @@
 import './jike.css';
+import './panel.css';
 import { getTopicId, getTopics } from '../../shared/topics';
+import { mountDetailPanel } from './panel';
 
 const ROOT_CLASS = 'jike-k-picture-mode';
 
 export default defineContentScript({
   matches: ['https://web.okjike.com/*'],
   runAt: 'document_idle',
-  main() {
+  main(ctx) {
     let currentPath = location.pathname;
 
     const applyMode = async () => {
@@ -23,6 +25,7 @@ export default defineContentScript({
     };
 
     void applyMode();
+    mountDetailPanel(ctx);
     browser.storage.onChanged.addListener((_changes, areaName) => {
       if (areaName === 'sync') void applyMode();
     });

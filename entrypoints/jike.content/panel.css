@@ -1,0 +1,214 @@
+.jike-k-detail-panel {
+  all: initial;
+  box-sizing: border-box;
+  position: fixed !important;
+  z-index: 2147483647 !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: min(42vw, 560px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: #fff !important;
+  color: #17202a !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  box-shadow: -12px 0 32px rgba(26, 35, 44, 0.12) !important;
+  transform: translateX(0) !important;
+  transition: transform 180ms ease !important;
+}
+
+.jike-k-detail-panel[aria-hidden="true"] {
+  transform: translateX(102%) !important;
+  pointer-events: none !important;
+}
+
+.jike-k-detail-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  min-height: 72px !important;
+  padding: 18px 22px !important;
+  border-bottom: 1px solid #edf0f2 !important;
+}
+
+.jike-k-detail-eyebrow,
+.jike-k-detail-section-title {
+  display: block !important;
+  color: #8b96a3 !important;
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+  letter-spacing: 0.04em !important;
+}
+
+.jike-k-detail-header h2 {
+  margin: 2px 0 0 !important;
+  color: #17202a !important;
+  font-size: 19px !important;
+  font-weight: 650 !important;
+  line-height: 1.35 !important;
+}
+
+.jike-k-detail-close {
+  width: 32px !important;
+  height: 32px !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: #f4f6f7 !important;
+  color: #56616d !important;
+  font-size: 24px !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+}
+
+.jike-k-detail-content {
+  flex: 1 !important;
+  min-height: 0 !important;
+  overflow: auto !important;
+  padding: 22px !important;
+}
+
+.jike-k-detail-post {
+  padding-bottom: 24px !important;
+  border-bottom: 1px solid #edf0f2 !important;
+}
+
+.jike-k-detail-meta {
+  display: flex !important;
+  align-items: baseline !important;
+  gap: 9px !important;
+  color: #8b96a3 !important;
+  font-size: 13px !important;
+}
+
+.jike-k-detail-meta strong {
+  color: #17202a !important;
+  font-size: 15px !important;
+}
+
+.jike-k-detail-body {
+  margin: 16px 0 0 !important;
+  color: #2e3944 !important;
+  font-size: 15px !important;
+  line-height: 1.75 !important;
+  white-space: pre-wrap !important;
+}
+
+.jike-k-detail-gallery {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+  margin-top: 16px !important;
+}
+
+.jike-k-detail-gallery img {
+  display: block !important;
+  width: 100% !important;
+  max-height: 250px !important;
+  border-radius: 8px !important;
+  background: #f4f6f7 !important;
+  object-fit: contain !important;
+}
+
+.jike-k-detail-replies {
+  padding-top: 22px !important;
+}
+
+.jike-k-detail-comment-list {
+  margin-top: 22px !important;
+  padding-top: 18px !important;
+  border-top: 1px solid #edf0f2 !important;
+}
+
+.jike-k-detail-empty,
+.jike-k-detail-comment {
+  margin: 8px 0 0 !important;
+  color: #687582 !important;
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+}
+
+.jike-k-detail-comment {
+  padding: 10px 12px !important;
+  border-radius: 8px !important;
+  background: #f7f9fa !important;
+}
+
+.jike-k-detail-hint {
+  margin: 8px 0 14px !important;
+  color: #8b96a3 !important;
+  font-size: 12px !important;
+  line-height: 1.5 !important;
+}
+
+.jike-k-detail-reply-input {
+  display: block !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  resize: vertical !important;
+  border: 1px solid #e1e6ea !important;
+  border-radius: 10px !important;
+  padding: 12px !important;
+  background: #fafbfc !important;
+  color: #17202a !important;
+  font: inherit !important;
+  font-size: 14px !important;
+  line-height: 1.55 !important;
+  outline: none !important;
+}
+
+.jike-k-detail-reply-input:focus {
+  border-color: #2aa7ff !important;
+  box-shadow: 0 0 0 3px rgba(42, 167, 255, 0.12) !important;
+}
+
+.jike-k-detail-reply-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  margin-top: 10px !important;
+}
+
+.jike-k-detail-reply-status {
+  min-height: 18px !important;
+  color: #8b96a3 !important;
+  font-size: 12px !important;
+}
+
+.jike-k-detail-reply-button {
+  border: 0 !important;
+  border-radius: 8px !important;
+  padding: 9px 15px !important;
+  background: #2aa7ff !important;
+  color: #fff !important;
+  font: inherit !important;
+  font-size: 13px !important;
+  font-weight: 650 !important;
+  cursor: pointer !important;
+}
+
+.jike-k-detail-reply-button:disabled {
+  cursor: wait !important;
+  opacity: 0.6 !important;
+}
+
+html.jike-k-has-detail-panel body {
+  padding-right: min(42vw, 560px) !important;
+}
+
+html.jike-k-has-detail-panel .tabs-tabpane > div > div {
+  display: flex !important;
+  flex-direction: column !important;
+  width: min(100%, 680px) !important;
+  margin: 0 auto !important;
+}
+
+@media (max-width: 800px) {
+  .jike-k-detail-panel {
+    width: 100% !important;
+  }
+
+  html.jike-k-has-detail-panel body {
+    padding-right: 0 !important;
+  }
+}
