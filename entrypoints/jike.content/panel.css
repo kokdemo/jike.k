@@ -1,3 +1,7 @@
+:root {
+  --jike-k-detail-panel-width: min(42vw, 560px);
+}
+
 .jike-k-detail-panel {
   all: initial;
   box-sizing: border-box;
@@ -6,29 +10,54 @@
   top: 0 !important;
   right: 0 !important;
   bottom: 0 !important;
-  width: min(42vw, 560px) !important;
+  width: var(--jike-k-detail-panel-width) !important;
   display: flex !important;
   flex-direction: column !important;
+  border: 0 !important;
   background: #fff !important;
   color: #17202a !important;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
-  box-shadow: -12px 0 32px rgba(26, 35, 44, 0.12) !important;
+  box-shadow: none !important;
   transform: translateX(0) !important;
   transition: transform 180ms ease !important;
 }
 
-.jike-k-detail-panel[aria-hidden="true"] {
-  transform: translateX(102%) !important;
-  pointer-events: none !important;
+.jike-k-detail-resizer {
+  position: absolute !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  left: -1px !important;
+  z-index: 3 !important;
+  width: 3px !important;
+  cursor: col-resize !important;
+  background: #e5e9ed !important;
+  touch-action: none !important;
+}
+
+.jike-k-selected-post {
+  background: rgba(42, 167, 255, 0.08) !important;
+  box-shadow: inset 3px 0 0 #2aa7ff !important;
 }
 
 .jike-k-detail-header {
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  left: 0 !important;
+  z-index: 2 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  min-height: 72px !important;
-  padding: 18px 22px !important;
-  border-bottom: 1px solid #edf0f2 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border-bottom: 0 !important;
+}
+
+.jike-k-detail-header > div,
+.jike-k-detail-replies > .jike-k-detail-section-title,
+.jike-k-detail-hint,
+.jike-k-detail-comment-list {
+  display: none !important;
 }
 
 .jike-k-detail-eyebrow,
@@ -49,6 +78,9 @@
 }
 
 .jike-k-detail-close {
+  position: absolute !important;
+  top: 16px !important;
+  right: 22px !important;
   width: 32px !important;
   height: 32px !important;
   border: 0 !important;
@@ -63,13 +95,44 @@
 .jike-k-detail-content {
   flex: 1 !important;
   min-height: 0 !important;
-  overflow: auto !important;
-  padding: 22px !important;
+  display: flex !important;
+  overflow: hidden !important;
+  padding: 0 !important;
 }
 
 .jike-k-detail-post {
-  padding-bottom: 24px !important;
-  border-bottom: 1px solid #edf0f2 !important;
+  display: flex !important;
+  flex: 1 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border-bottom: 0 !important;
+}
+
+.jike-k-detail-empty-state {
+  flex: 1 !important;
+  width: 100% !important;
+  min-height: 220px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 24px !important;
+  text-align: center !important;
+}
+
+.jike-k-detail-empty-state h3 {
+  margin: 0 0 6px !important;
+  color: #2e3944 !important;
+  font-size: 16px !important;
+  font-weight: 650 !important;
+}
+
+.jike-k-detail-empty-state p {
+  max-width: 260px !important;
+  margin: 0 !important;
+  color: #8b96a3 !important;
+  font-size: 13px !important;
+  line-height: 1.6 !important;
 }
 
 .jike-k-detail-meta {
@@ -93,6 +156,23 @@
   white-space: pre-wrap !important;
 }
 
+.jike-k-detail-iframe {
+  display: block !important;
+  flex: 1 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: #fff !important;
+  visibility: hidden !important;
+}
+
+.jike-k-detail-iframe[data-jike-k-frame-ready="true"] {
+  visibility: visible !important;
+}
+
 .jike-k-detail-gallery {
   display: grid !important;
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -110,13 +190,49 @@
 }
 
 .jike-k-detail-replies {
-  padding-top: 22px !important;
+  flex: 0 0 auto !important;
+  padding: 12px 22px 14px !important;
+  border-top: 1px solid #e5e9ed !important;
+  background: #fff !important;
+}
+
+.jike-k-detail-panel.jike-k-native-reply-mode .jike-k-detail-replies {
+  display: none !important;
+}
+
+.jike-k-detail-reply-composer {
+  width: min(100%, 680px) !important;
+  margin: 0 auto !important;
+}
+
+.jike-k-detail-reply-input-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.jike-k-detail-reply-avatar {
+  display: grid !important;
+  flex: 0 0 36px !important;
+  place-items: center !important;
+  width: 36px !important;
+  height: 36px !important;
+  overflow: hidden !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, #f3d8b2, #d6e4ef) !important;
+}
+
+.jike-k-detail-reply-avatar img {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
 }
 
 .jike-k-detail-comment-list {
   margin-top: 22px !important;
   padding-top: 18px !important;
-  border-top: 1px solid #edf0f2 !important;
+  border-top: 0 !important;
 }
 
 .jike-k-detail-empty,
@@ -143,13 +259,16 @@
 .jike-k-detail-reply-input {
   display: block !important;
   box-sizing: border-box !important;
+  flex: 1 !important;
   width: 100% !important;
-  resize: vertical !important;
-  border: 1px solid #e1e6ea !important;
-  border-radius: 10px !important;
-  padding: 12px !important;
-  background: #fafbfc !important;
-  color: #17202a !important;
+  min-height: 38px !important;
+  max-height: 96px !important;
+  resize: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 8px 0 !important;
+  background: transparent !important;
+  color: #24313d !important;
   font: inherit !important;
   font-size: 14px !important;
   line-height: 1.55 !important;
@@ -157,30 +276,78 @@
 }
 
 .jike-k-detail-reply-input:focus {
-  border-color: #2aa7ff !important;
-  box-shadow: 0 0 0 3px rgba(42, 167, 255, 0.12) !important;
+  border: 0 !important;
+  box-shadow: none !important;
 }
 
 .jike-k-detail-reply-actions {
   display: flex !important;
   align-items: center !important;
-  justify-content: space-between !important;
   gap: 12px !important;
-  margin-top: 10px !important;
+  margin-top: 6px !important;
+}
+
+.jike-k-detail-reply-media,
+.jike-k-detail-reply-mode {
+  display: grid !important;
+  place-items: center !important;
+  width: 34px !important;
+  height: 30px !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: #2aa7ff !important;
+  cursor: pointer !important;
+}
+
+.jike-k-detail-reply-media {
+  position: relative !important;
+}
+
+.jike-k-detail-reply-media::before {
+  width: 15px !important;
+  height: 13px !important;
+  border: 2px solid currentColor !important;
+  border-radius: 3px !important;
+  content: '' !important;
+}
+
+.jike-k-detail-reply-media::after {
+  position: absolute !important;
+  width: 4px !important;
+  height: 4px !important;
+  margin: -5px 0 0 5px !important;
+  border-radius: 50% !important;
+  background: currentColor !important;
+  content: '' !important;
+}
+
+.jike-k-detail-reply-spacer {
+  flex: 1 !important;
+}
+
+.jike-k-detail-reply-mode {
+  width: 52px !important;
+  border: 1px solid #dfe4e8 !important;
+  border-radius: 18px !important;
+  color: #596570 !important;
+  font-size: 20px !important;
+  line-height: 1 !important;
 }
 
 .jike-k-detail-reply-status {
-  min-height: 18px !important;
+  display: block !important;
+  min-height: 16px !important;
+  margin-top: 2px !important;
   color: #8b96a3 !important;
   font-size: 12px !important;
 }
 
 .jike-k-detail-reply-button {
   border: 0 !important;
-  border-radius: 8px !important;
-  padding: 9px 15px !important;
-  background: #2aa7ff !important;
-  color: #fff !important;
+  border-radius: 18px !important;
+  padding: 8px 18px !important;
+  background: #ffd91a !important;
+  color: #2d3134 !important;
   font: inherit !important;
   font-size: 13px !important;
   font-weight: 650 !important;
@@ -193,7 +360,7 @@
 }
 
 html.jike-k-has-detail-panel body {
-  padding-right: min(42vw, 560px) !important;
+  padding-right: var(--jike-k-detail-panel-width) !important;
 }
 
 html.jike-k-has-detail-panel .tabs-tabpane > div > div {
@@ -206,6 +373,10 @@ html.jike-k-has-detail-panel .tabs-tabpane > div > div {
 @media (max-width: 800px) {
   .jike-k-detail-panel {
     width: 100% !important;
+  }
+
+  .jike-k-detail-resizer {
+    display: none !important;
   }
 
   html.jike-k-has-detail-panel body {

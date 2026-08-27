@@ -1,6 +1,7 @@
 import { defineConfig } from 'wxt';
 
 export default defineConfig({
+  outDir: 'dist',
   manifest: {
     name: 'jike.k',
     description: '为即刻网页版提供可选的看图模式。',
