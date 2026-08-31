@@ -35,8 +35,34 @@
 }
 
 .jike-k-selected-post {
+  outline: 2px solid rgba(42, 167, 255, 0.72) !important;
+  outline-offset: -2px !important;
   background: rgba(42, 167, 255, 0.08) !important;
   box-shadow: inset 3px 0 0 #2aa7ff !important;
+}
+
+.jike-k-post-loading {
+  position: relative !important;
+  opacity: 0.72 !important;
+  transition: opacity 160ms ease !important;
+}
+
+.jike-k-post-loading::after {
+  position: absolute !important;
+  top: 14px !important;
+  right: 14px !important;
+  width: 16px !important;
+  height: 16px !important;
+  border: 2px solid rgba(42, 167, 255, 0.25) !important;
+  border-top-color: #2aa7ff !important;
+  border-radius: 50% !important;
+  animation: jike-k-post-loading-spin 720ms linear infinite !important;
+  content: '' !important;
+  pointer-events: none !important;
+}
+
+@keyframes jike-k-post-loading-spin {
+  to { transform: rotate(360deg); }
 }
 
 .jike-k-detail-header {
@@ -287,53 +313,6 @@
   margin-top: 6px !important;
 }
 
-.jike-k-detail-reply-media,
-.jike-k-detail-reply-mode {
-  display: grid !important;
-  place-items: center !important;
-  width: 34px !important;
-  height: 30px !important;
-  border: 0 !important;
-  background: transparent !important;
-  color: #2aa7ff !important;
-  cursor: pointer !important;
-}
-
-.jike-k-detail-reply-media {
-  position: relative !important;
-}
-
-.jike-k-detail-reply-media::before {
-  width: 15px !important;
-  height: 13px !important;
-  border: 2px solid currentColor !important;
-  border-radius: 3px !important;
-  content: '' !important;
-}
-
-.jike-k-detail-reply-media::after {
-  position: absolute !important;
-  width: 4px !important;
-  height: 4px !important;
-  margin: -5px 0 0 5px !important;
-  border-radius: 50% !important;
-  background: currentColor !important;
-  content: '' !important;
-}
-
-.jike-k-detail-reply-spacer {
-  flex: 1 !important;
-}
-
-.jike-k-detail-reply-mode {
-  width: 52px !important;
-  border: 1px solid #dfe4e8 !important;
-  border-radius: 18px !important;
-  color: #596570 !important;
-  font-size: 20px !important;
-  line-height: 1 !important;
-}
-
 .jike-k-detail-reply-status {
   display: block !important;
   min-height: 16px !important;
@@ -343,6 +322,7 @@
 }
 
 .jike-k-detail-reply-button {
+  margin-left: auto !important;
   border: 0 !important;
   border-radius: 18px !important;
   padding: 8px 18px !important;

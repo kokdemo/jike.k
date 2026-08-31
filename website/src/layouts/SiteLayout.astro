@@ -1,0 +1,59 @@
+---
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const pathname = Astro.url.pathname;
+const canonical = new URL(pathname, Astro.site ?? 'https://jikek.wocai.de');
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/png" href="/icon.png" />
+    <link rel="canonical" href={canonical} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="/" aria-label="jike.k 首页">
+          <img src="/icon.png" alt="" width="30" height="30" />
+          <span>jike.k</span>
+        </a>
+        <nav class="site-nav" aria-label="主导航">
+          <a class:list={{ active: pathname === '/' }} href="/#features">功能</a>
+          <a class:list={{ active: pathname === '/privacy' }} href="/privacy">隐私政策</a>
+        </nav>
+        <a
+          class="header-cta"
+          href="https://chromewebstore.google.com/detail/ceohoefapneebmoilaicplfenfkmfoni?authuser=0&hl=zh-CN"
+          target="_blank"
+          rel="noreferrer"
+        >
+          免费下载
+        </a>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <span class="footer-brand">jike.k</span>
+        <span>为即刻网页版做一点小改进</span>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  @import '../styles/global.css';
+</style>

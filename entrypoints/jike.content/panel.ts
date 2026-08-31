@@ -31,11 +31,35 @@ const POST_TARGET_SELECTOR = [
   '[data-url*="/post/"]',
   '[data-route*="/post/"]',
   '[to*="/post/"]',
+  '[data-post-url*="/post/"]',
+  '[data-post-href*="/post/"]',
+  '[data-permalink*="/post/"]',
 ].join(',');
 const POST_PATH_PATTERN = /\/post(?:\/|$)/;
+const POST_ELEMENT_SELECTOR = `${POST_TARGET_SELECTOR},${CARD_SELECTOR}`;
+const POST_URL_ATTRIBUTES = [
+  'href',
+  'data-href',
+  'data-url',
+  'data-route',
+  'to',
+  'data-post-url',
+  'data-post-href',
+  'data-permalink',
+];
+const QUOTE_CONTAINER_SELECTOR = [
+  'blockquote',
+  '[data-quoted-post]',
+  '[data-quoted-post-id]',
+  '[data-quote-post]',
+  '[class*="quoted-post" i]',
+  '[class*="quote-post" i]',
+  '[class*="quoted" i]',
+  '[class*="quote" i]',
+].join(',');
 
 function postUrlFromElement(element: Element): string | undefined {
-  for (const attribute of ['href', 'data-href', 'data-url', 'data-route', 'to']) {
+  for (const attribute of POST_URL_ATTRIBUTES) {
     const raw = element.getAttribute(attribute);
     if (!raw || !raw.includes('/post/')) continue;
     try {
@@ -47,7 +71,42 @@ function postUrlFromElement(element: Element): string | undefined {
       // Ignore malformed route attributes.
     }
   }
-  return undefined;
+  const postId = element.getAttribute('data-post-id')?.trim();
+  if (!postId) return undefined;
+  const userId = [
+    'data-user-id',
+    'data-author-id',
+    'data-user-uuid',
+  ].map((attribute) => element.getAttribute(attribute)?.trim()).find(Boolean)
+    ?? Array.from(element.querySelectorAll<HTMLAnchorElement>('a[href]'))
+      .filter((link) => !isQuotedPostLink(link, element))
+      .map((link) => {
+        try {
+          return new URL(link.href, location.href).pathname.match(/^\/u\/([^/?#]+)/)?.[1];
+        } catch {
+          return undefined;
+        }
+      })
+      .find(Boolean);
+  if (!userId) return undefined;
+  return new URL(`/u/${encodeURIComponent(userId)}/post/${encodeURIComponent(postId)}`, location.origin).href;
+}
+
+function isQuotedPostLink(link: Element, card: Element): boolean {
+  let ancestor = link.parentElement;
+  while (ancestor && ancestor !== card) {
+    if (ancestor.matches(QUOTE_CONTAINER_SELECTOR)) return true;
+    ancestor = ancestor.parentElement;
+  }
+  return false;
+}
+
+function findPrimaryPostLink(card: Element, preferredLink?: Element): Element | undefined {
+  if (preferredLink && isQuotedPostLink(preferredLink, card)) return preferredLink;
+  if (preferredLink) return preferredLink;
+  if (postUrlFromElement(card)) return card;
+  const links = Array.from(card.querySelectorAll<HTMLElement>(POST_TARGET_SELECTOR));
+  return links.find((link) => !isQuotedPostLink(link, card)) ?? links[0];
 }
 
 function textFrom(root: Element, selectors: string[]): string {
@@ -59,14 +118,15 @@ function textFrom(root: Element, selectors: string[]): string {
   return '';
 }
 
-function snapshotPost(card: Element): PostSnapshot {
-  const postLink = card.matches(POST_TARGET_SELECTOR)
-    ? card
-    : card.querySelector(POST_TARGET_SELECTOR)
-      ?? card.closest(POST_TARGET_SELECTOR);
+function snapshotPost(card: Element, selectedLink?: Element): PostSnapshot {
+  const postLink = findPrimaryPostLink(card, selectedLink)
+    ?? (card.matches(POST_TARGET_SELECTOR) ? card : card.closest(POST_TARGET_SELECTOR));
   const url = postLink ? postUrlFromElement(postLink) : undefined;
 
   const images = Array.from(card.querySelectorAll<HTMLImageElement>('img'))
+    .filter((image) => !/avatar|icon|logo|emoji|badge/i.test(
+      `${typeof image.className === 'string' ? image.className : ''} ${image.alt}`,
+    ))
     .map((image) => image.currentSrc || image.src)
     .filter(Boolean)
     .slice(0, 6);
@@ -104,197 +164,98 @@ function createElement<K extends keyof HTMLElementTagNameMap>(
   return element;
 }
 
-function hidePageChrome(frameDocument: Document, viewportWidth: number, viewportHeight: number): void {
-  if (!frameDocument.head) return;
-  if (!frameDocument.getElementById('jike-k-hide-chrome')) {
-    const style = frameDocument.createElement('style');
-    style.id = 'jike-k-hide-chrome';
-    style.textContent = `
-    html {
-      min-height: 100% !important;
-      margin: 0 !important;
-      overflow-x: hidden !important;
-      overflow-y: auto !important;
-    }
-    body {
-      min-height: 100% !important;
-      height: auto !important;
-      margin: 0 !important;
-      padding-bottom: 96px !important;
-      overflow-x: hidden !important;
-      overflow-y: visible !important;
-    }
-    body > div {
-      min-height: 100% !important;
-      height: auto !important;
-      overflow: visible !important;
-    }
-    [data-jike-k-hidden-chrome="true"] { display: none !important; }
-    [data-jike-k-native-composer="true"] {
-      position: fixed !important;
-      right: 0 !important;
-      bottom: 0 !important;
-      left: 0 !important;
-      z-index: 2147483646 !important;
-      box-sizing: border-box !important;
-      margin: 0 !important;
-      padding: 10px 24px 12px !important;
-      background: #fff !important;
-      border-top: 1px solid #e5e9ed !important;
-    }
-    [data-jike-k-image-group="true"] {
-      display: flex !important;
-      flex-direction: column !important;
-      width: 100% !important;
-      gap: 12px !important;
-    }
-    [data-jike-k-image-item="true"] {
-      display: block !important;
-      width: 100% !important;
-      height: auto !important;
-      min-height: 0 !important;
-      max-height: none !important;
-      aspect-ratio: auto !important;
-      overflow: visible !important;
-    }
-    [data-jike-k-image-item="true"] > * {
-      width: 100% !important;
-      height: auto !important;
-      max-height: none !important;
-      aspect-ratio: auto !important;
-    }
-    [data-jike-k-full-image="true"] {
-      display: block !important;
-      width: 100% !important;
-      max-width: 100% !important;
-      height: auto !important;
-      object-fit: contain !important;
-    }
-    `;
-    frameDocument.head.append(style);
+const DETAIL_FRAME_STYLE = `
+  html,
+  body {
+    min-height: 100% !important;
+    margin: 0 !important;
   }
-  for (const element of Array.from(frameDocument.querySelectorAll<HTMLElement>('[data-jike-k-hidden-chrome]'))) {
-    element.removeAttribute('data-jike-k-hidden-chrome');
+  html { overflow: auto !important; }
+  body {
+    height: auto !important;
+    overflow: visible !important;
   }
-  for (const attribute of ['data-jike-k-image-group', 'data-jike-k-image-item', 'data-jike-k-full-image']) {
-    for (const element of Array.from(frameDocument.querySelectorAll<HTMLElement>(`[${attribute}]`))) {
-      element.removeAttribute(attribute);
-    }
+  body > div {
+    min-height: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
   }
-
-  const markHidden = (element: HTMLElement) => {
-    element.dataset.jikeKHiddenChrome = 'true';
-  };
-  const hideCompactContainer = (input: HTMLElement) => {
-    let candidate: HTMLElement = input;
-    for (let depth = 0; depth < 5 && candidate.parentElement; depth += 1) {
-      const parent = candidate.parentElement;
-      const rect = parent.getBoundingClientRect();
-      if (rect.width >= viewportWidth * 0.65 && rect.height <= 260) {
-        markHidden(parent);
-        return;
-      }
-      candidate = parent;
-    }
-    markHidden(input);
-  };
-  const markNativeComposer = (input: HTMLElement) => {
-    let candidate: HTMLElement = input;
-    for (let depth = 0; depth < 5 && candidate.parentElement; depth += 1) {
-      const parent = candidate.parentElement;
-      const rect = parent.getBoundingClientRect();
-      if (rect.width >= viewportWidth * 0.65 && rect.height <= 260) {
-        parent.dataset.jikeKNativeComposer = 'true';
-        return;
-      }
-      candidate = parent;
-    }
-    input.dataset.jikeKNativeComposer = 'true';
-  };
-
-  const normalizeImageGroups = () => {
-    const isContentImage = (image: HTMLImageElement) => {
-      const rect = image.getBoundingClientRect();
-      const className = typeof image.className === 'string' ? image.className : '';
-      return rect.width >= 120 && rect.height >= 120 && !/avatar|icon|logo|emoji|badge/i.test(className);
-    };
-    const groups = frameDocument.querySelectorAll<HTMLElement>(
-      '.pic-group, .picture-list, [class*="image-grid"], [class*="image-gallery"], [class*="media-grid"], [class*="photo-grid"]',
-    );
-    for (const group of Array.from(groups)) {
-      const images = Array.from(group.querySelectorAll<HTMLImageElement>('img')).filter(isContentImage);
-      if (images.length < 2) continue;
-      group.dataset.jikeKImageGroup = 'true';
-      for (const image of images) {
-        image.dataset.jikeKFullImage = 'true';
-        image.parentElement?.setAttribute('data-jike-k-image-item', 'true');
-      }
-    }
-  };
-
-  normalizeImageGroups();
-
-  for (const element of Array.from(frameDocument.querySelectorAll<HTMLElement>('body *'))) {
-    const computed = frameDocument.defaultView?.getComputedStyle(element);
-    const rect = element.getBoundingClientRect();
-    const text = element.textContent?.replace(/\s+/g, ' ').trim() ?? '';
-    const placeholder = element.getAttribute('placeholder') ?? '';
-    if (/动态详情/.test(text) && rect.top <= 180 && rect.height <= 180) {
-      hideCompactContainer(element);
-      continue;
-    }
-    const isComposerSignal = /友善发言/.test(placeholder)
-      || (rect.height > 0 && rect.height <= 260 && rect.width >= viewportWidth * 0.65 && /友善发言/.test(text));
-    if (isComposerSignal) {
-      markNativeComposer(element);
-      continue;
-    }
-    const className = typeof element.className === 'string' ? element.className : '';
-    if (/comment|reply/i.test(`${element.id} ${className}`)) {
-      element.removeAttribute('data-jike-k-hidden-chrome');
-      continue;
-    }
-    if (!computed || !['fixed', 'sticky'].includes(computed.position)) continue;
-    const fullWidth = rect.width >= viewportWidth * 0.75;
-    const compact = rect.height > 0 && rect.height <= 140;
-    const atBottom = rect.bottom >= viewportHeight - 100;
-    const buttonCount = element.querySelectorAll('button, a, [role="button"]').length;
-    const isBottomNavigation = atBottom && /footer|tabbar|bottom-nav|navbar/i.test(
-      `${element.id} ${className}`,
-    );
-    const isLikelyBottomBar = fullWidth && compact && atBottom && buttonCount >= 4;
-    const isFloatingAction = atBottom && rect.width <= 140 && rect.height <= 140
-      && (/fab|float|add|create|plus/i.test(`${element.id} ${className}`) || text === '+');
-    if (isBottomNavigation || isLikelyBottomBar || isFloatingAction) {
-      markHidden(element);
-    }
+  header:has(button[aria-label*="关闭"]),
+  header:has(button[aria-label*="close" i]) {
+    display: none !important;
   }
+  .jike-k-frame-hidden-header {
+    display: none !important;
+  }
+  [role="banner"]:has(button[aria-label*="关闭"]),
+  [role="banner"]:has(button[aria-label*="close" i]) {
+    display: none !important;
+  }
+  [id^="_mobileTabBarShell"],
+  [class^="_mobileTabBarShell"],
+  [class*=" _mobileTabBarShell"],
+  [id^="_mobileCreateButtonWrapper"],
+  [class^="_mobileCreateButtonWrapper"],
+  [class*=" _mobileCreateButtonWrapper"] {
+    display: none !important;
+  }
+`;
 
-  normalizeImageGroups();
+function injectFrameStyle(frameDocument: Document | null): void {
+  if (!frameDocument || frameDocument.getElementById('jike-k-frame-style')) return;
+  const style = frameDocument.createElement('style');
+  style.id = 'jike-k-frame-style';
+  style.textContent = DETAIL_FRAME_STYLE;
+  (frameDocument.head ?? frameDocument.documentElement)?.append(style);
 }
 
-function prepareDetailFrame(frame: HTMLIFrameElement): void {
-  const frameDocument = frame.contentDocument;
-  if (!frameDocument) return;
-  hidePageChrome(frameDocument, frame.clientWidth || 480, frame.clientHeight || 800);
-}
-
-export function mountFrameChromeHider(ctx: ContentScriptContext): void {
-  const hide = () => hidePageChrome(document, window.innerWidth || 480, window.innerHeight || 800);
-
-  // Inject the base rules before the first completed paint. Follow-up scans are
-  // deliberately sparse to avoid competing with the host app's rendering.
-  hide();
-  if (document.readyState === 'loading') {
-    ctx.addEventListener(document, 'DOMContentLoaded', hide, { once: true });
+function markFrameHeader(frameDocument: Document | null): void {
+  if (!frameDocument?.body) return;
+  const viewportWidth = frameDocument.defaultView?.innerWidth || 480;
+  const headers = Array.from(frameDocument.querySelectorAll<HTMLElement>('header, [role="banner"]')).filter((header) => {
+    const text = header.textContent?.replace(/\s+/g, ' ').trim() ?? '';
+    const rect = header.getBoundingClientRect();
+    return rect.top < 220 && rect.width >= viewportWidth * 0.6
+      && !header.querySelector('img')
+      && (/动态详情|关闭|close|返回|back/i.test(text) || header.querySelector('button'));
+  });
+  for (const header of headers) {
+    let candidate: HTMLElement | null = header;
+    let best: HTMLElement = header;
+    for (let depth = 0; candidate && depth < 5; depth += 1) {
+      const rect = candidate.getBoundingClientRect();
+      if (rect.width >= viewportWidth * 0.6 && rect.height > 0 && rect.height <= 280
+        && rect.height >= best.getBoundingClientRect().height) {
+        best = candidate;
+      }
+      candidate = candidate.parentElement;
+    }
+    best.classList.add('jike-k-frame-hidden-header');
   }
-  ctx.setTimeout(hide, 150);
-  ctx.setTimeout(hide, 500);
-  ctx.setInterval(hide, 1500);
+
+  const titleNodes = Array.from(frameDocument.querySelectorAll<HTMLElement>(
+    'h1, h2, [role="heading"], [class*="title" i], [class*="header" i]',
+  )).filter((element) => /动态详情/.test(element.textContent?.replace(/\s+/g, ' ').trim() ?? ''));
+  for (const titleNode of titleNodes) {
+    let candidate: HTMLElement | null = titleNode;
+    let best: HTMLElement | undefined;
+    for (let depth = 0; candidate && candidate !== frameDocument.body && depth < 7; depth += 1) {
+      const rect = candidate.getBoundingClientRect();
+      if (rect.top < 220 && rect.width >= viewportWidth * 0.6 && rect.height > 0 && rect.height <= 320
+        && (!best || rect.height >= best.getBoundingClientRect().height)) {
+        best = candidate;
+      }
+      candidate = candidate.parentElement;
+    }
+    best?.classList.add('jike-k-frame-hidden-header');
+  }
 }
 
-function renderPost(panel: DetailPanel, post: PostSnapshot): void {
+function renderPost(panel: DetailPanel, post: PostSnapshot, onFrameSettled?: () => void): void {
   const detail = panel.detail;
+  if (panel.detailFrame) {
+    panel.detailFrame.src = 'about:blank';
+  }
   panel.detailFrame = undefined;
   detail.replaceChildren();
 
@@ -304,13 +265,39 @@ function renderPost(panel: DetailPanel, post: PostSnapshot): void {
     frame.style.visibility = 'hidden';
     frame.src = post.url;
     frame.addEventListener('load', () => {
-      prepareDetailFrame(frame);
+      try {
+        injectFrameStyle(frame.contentDocument);
+        markFrameHeader(frame.contentDocument);
+        if (frame.contentDocument?.body) {
+          const headerObserver = new MutationObserver(() => markFrameHeader(frame.contentDocument));
+          headerObserver.observe(frame.contentDocument.body, { childList: true, subtree: true });
+          window.setTimeout(() => headerObserver.disconnect(), 5000);
+        }
+      } catch {
+        // A navigation that becomes cross-origin cannot be styled from the parent.
+      }
+      window.setTimeout(() => {
+        try {
+          markFrameHeader(frame.contentDocument);
+        } catch {
+          // Ignore a frame that navigated away before the composer appeared.
+        }
+      }, 150);
+      window.setTimeout(() => {
+        try {
+          markFrameHeader(frame.contentDocument);
+        } catch {
+          // Ignore a frame that navigated away before the page settled.
+        }
+      }, 600);
       frame.dataset.jikeKFrameReady = 'true';
       frame.style.visibility = 'visible';
+      onFrameSettled?.();
     }, { once: true });
     frame.addEventListener('error', () => {
       frame.dataset.jikeKFrameReady = 'true';
       frame.style.visibility = 'visible';
+      onFrameSettled?.();
     }, { once: true });
     detail.append(frame);
     panel.detailFrame = frame;
@@ -372,11 +359,21 @@ function renderEmpty(detail: HTMLElement): void {
   detail.append(empty);
 }
 
+function isInsideQuoteContainer(element: Element): boolean {
+  let ancestor = element.parentElement;
+  for (let depth = 0; ancestor && depth < 12; depth += 1) {
+    if (ancestor.matches(QUOTE_CONTAINER_SELECTOR)) return true;
+    ancestor = ancestor.parentElement;
+  }
+  return false;
+}
+
 function findNativeReplyButton(root: ParentNode): HTMLElement | undefined {
-  return Array.from(root.querySelectorAll<HTMLElement>('button, a, [role="button"]'))
-    .find((element) => /评论|回复|comment|reply/i.test(
+  const candidates = Array.from(root.querySelectorAll<HTMLElement>('button, a, [role="button"]'))
+    .filter((element) => /评论|回复|comment|reply/i.test(
       `${element.getAttribute('aria-label') ?? ''} ${element.textContent ?? ''}`,
     ));
+  return candidates.find((element) => !isInsideQuoteContainer(element)) ?? candidates[0];
 }
 
 function findNativeComposer(root: ParentNode, panel: HTMLElement): HTMLTextAreaElement | HTMLElement | undefined {
@@ -472,9 +469,6 @@ function createPanel(): DetailPanel {
           <textarea class="jike-k-detail-reply-input" placeholder="友善发言的人运气都不会太差" rows="1"></textarea>
         </div>
         <div class="jike-k-detail-reply-actions">
-          <button class="jike-k-detail-reply-media" type="button" aria-label="添加图片"></button>
-          <span class="jike-k-detail-reply-spacer"></span>
-          <button class="jike-k-detail-reply-mode" type="button" aria-label="切换回复模式">↔</button>
           <button class="jike-k-detail-reply-button" type="button">回复</button>
         </div>
         <span class="jike-k-detail-reply-status" aria-live="polite"></span>
@@ -498,11 +492,37 @@ export function mountDetailPanel(ctx: ContentScriptContext): void {
   let selectedCard: Element | undefined;
   let lastActivatedCard: Element | undefined;
   let lastActivationAt = 0;
+  let lastOpenedUrl: string | undefined;
   let observedUrl = location.href;
   let routeGuardEnabled = !POST_PATH_PATTERN.test(location.pathname);
   const closeButton = panel.root.querySelector<HTMLButtonElement>('.jike-k-detail-close');
   const resizer = panel.root.querySelector<HTMLElement>('.jike-k-detail-resizer');
   if (!closeButton || !resizer) throw new Error('Detail panel controls are incomplete.');
+  let selectedLink: Element | undefined;
+  let selectedPostUrl: string | undefined;
+
+  const postPath = (url: string): string | undefined => {
+    try {
+      return new URL(url, location.href).pathname;
+    } catch {
+      return undefined;
+    }
+  };
+
+  const restoreSelectedState = () => {
+    if (!selectedPostUrl) return;
+    const selectedPath = postPath(selectedPostUrl);
+    if (!selectedPath) return;
+    const matchingElement = Array.from(document.querySelectorAll<HTMLElement>(POST_ELEMENT_SELECTOR))
+      .find((element) => postPath(postUrlFromElement(element) ?? '') === selectedPath);
+    if (!matchingElement) return;
+    const matchingCard = matchingElement.closest(CARD_SELECTOR) ?? matchingElement;
+    const matchingLink = findPrimaryPostLink(matchingCard, matchingElement);
+    matchingCard.classList.add('jike-k-selected-post');
+    matchingLink?.classList.add('jike-k-selected-post');
+    selectedCard = matchingCard;
+    selectedLink = matchingLink;
+  };
 
   const setPanelWidth = (width: number) => {
     const maxWidth = Math.min(720, Math.round(window.innerWidth * 0.6));
@@ -531,25 +551,40 @@ export function mountDetailPanel(ctx: ContentScriptContext): void {
   resizer.addEventListener('pointercancel', stopResizing);
 
   const close = () => {
+    if (panel.detailFrame) {
+      panel.detailFrame.src = 'about:blank';
+      panel.detailFrame = undefined;
+    }
     renderEmpty(panel.detail);
     panel.replyInput.value = '';
     panel.replyStatus.textContent = '';
     panel.root.classList.remove('jike-k-native-reply-mode');
     selectedCard?.classList.remove('jike-k-selected-post');
+    selectedCard?.classList.remove('jike-k-post-loading');
+    selectedLink?.classList.remove('jike-k-selected-post');
     selectedCard = undefined;
+    selectedLink = undefined;
+    selectedPostUrl = undefined;
   };
 
-  const open = (card: Element) => {
+  const open = (card: Element, link?: Element) => {
     selectedCard?.classList.remove('jike-k-selected-post');
+    selectedCard?.classList.remove('jike-k-post-loading');
+    selectedLink?.classList.remove('jike-k-selected-post');
     selectedCard = card;
+    selectedLink = link;
     card.classList.add('jike-k-selected-post');
+    link?.classList.add('jike-k-selected-post');
     const avatar = panel.root.querySelector<HTMLImageElement>('.jike-k-detail-reply-avatar img');
     const sourceAvatar = document.querySelector<HTMLImageElement>(
       'header img, [class*="current-user"] img, [class*="user-avatar"] img',
     );
     if (avatar && sourceAvatar) avatar.src = sourceAvatar.currentSrc || sourceAvatar.src;
-    const post = snapshotPost(card);
-    renderPost(panel, post);
+    const post = snapshotPost(card, link);
+    card.classList.toggle('jike-k-post-loading', Boolean(post.url));
+    lastOpenedUrl = post.url;
+    selectedPostUrl = post.url;
+    renderPost(panel, post, () => card.classList.remove('jike-k-post-loading'));
     panel.root.classList.toggle('jike-k-native-reply-mode', Boolean(post.url));
     panel.replyStatus.textContent = '';
     panel.root.setAttribute('aria-hidden', 'false');
@@ -557,9 +592,20 @@ export function mountDetailPanel(ctx: ContentScriptContext): void {
   };
 
   const openPostUrl = (url: string) => {
+    const targetUrl = new URL(url, location.href);
+    const matchingElement = Array.from(document.querySelectorAll<HTMLElement>(POST_ELEMENT_SELECTOR))
+      .find((element) => {
+        const linkUrl = postUrlFromElement(element);
+        return linkUrl ? new URL(linkUrl).pathname === targetUrl.pathname : false;
+      });
+    if (matchingElement) {
+      const card = matchingElement.closest(CARD_SELECTOR) ?? matchingElement;
+      open(card, findPrimaryPostLink(card, matchingElement));
+      return;
+    }
     const link = document.createElement('a');
     link.href = url;
-    open(link);
+    open(link, link);
   };
 
   const guardPostRoute = () => {
@@ -570,7 +616,7 @@ export function mountDetailPanel(ctx: ContentScriptContext): void {
     if (routeGuardEnabled && currentIsPost && !previousIsPost) {
       history.replaceState(history.state, document.title, observedUrl);
       window.dispatchEvent(new PopStateEvent('popstate', { state: history.state }));
-      openPostUrl(currentUrl);
+      if (currentUrl !== lastOpenedUrl) openPostUrl(currentUrl);
       return;
     }
     observedUrl = currentUrl;
@@ -587,11 +633,13 @@ export function mountDetailPanel(ctx: ContentScriptContext): void {
     if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
 
     const path = eventElements(event);
-    const postLink = path.find((element) => postUrlFromElement(element))
-      ?? target.closest(POST_TARGET_SELECTOR);
+    const pathPostLink = path.find((element) => postUrlFromElement(element))
+      ?? target.closest(POST_TARGET_SELECTOR)
+      ?? undefined;
     const card = path.find((element) => element.matches(CARD_SELECTOR))
       ?? target.closest(CARD_SELECTOR)
-      ?? postLink;
+      ?? pathPostLink;
+    const postLink = card ? findPrimaryPostLink(card, pathPostLink) : pathPostLink;
     if (!card) return;
     if (target.closest('button, input, textarea, [contenteditable="true"]')) return;
     if (!postLink && !target.closest(CARD_SELECTOR)) return;
@@ -601,10 +649,11 @@ export function mountDetailPanel(ctx: ContentScriptContext): void {
     event.stopImmediatePropagation();
 
     const now = Date.now();
-    if (card === lastActivatedCard && now - lastActivationAt < 600) return;
-    lastActivatedCard = card;
+    const activationKey = postLink ?? target;
+    if (activationKey === lastActivatedCard && now - lastActivationAt < 600) return;
+    lastActivatedCard = activationKey;
     lastActivationAt = now;
-    open(card);
+    open(card, postLink);
   };
 
   const bindPostLinks = () => {
@@ -619,10 +668,10 @@ export function mountDetailPanel(ctx: ContentScriptContext): void {
         event.stopImmediatePropagation();
         const card = link.closest(CARD_SELECTOR) ?? link;
         const now = Date.now();
-        if (card === lastActivatedCard && now - lastActivationAt < 600) return;
-        lastActivatedCard = card;
+        if (link === lastActivatedCard && now - lastActivationAt < 600) return;
+        lastActivatedCard = link;
         lastActivationAt = now;
-        open(card);
+        open(card, link);
       };
       link.addEventListener('mousedown', handleLinkEvent as EventListener, true);
       link.addEventListener('mouseup', handleLinkEvent as EventListener, true);
@@ -663,6 +712,7 @@ export function mountDetailPanel(ctx: ContentScriptContext): void {
     renderEmpty(panel.detail);
     document.documentElement.classList.add('jike-k-has-detail-panel');
     bindPostLinks();
+    restoreSelectedState();
   };
   if (document.body) {
     mount();
@@ -673,6 +723,7 @@ export function mountDetailPanel(ctx: ContentScriptContext): void {
   const linkObserver = new MutationObserver(() => {
     mount();
     bindPostLinks();
+    restoreSelectedState();
   });
   const observeLinks = () => {
     if (!document.documentElement) return;

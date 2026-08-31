@@ -28,13 +28,6 @@ export async function getTopics(): Promise<Topics> {
   return (result[STORAGE_KEY] as Topics | undefined) ?? DEFAULT_TOPICS;
 }
 
-export async function ensureTopics(): Promise<void> {
-  const result = await browser.storage.sync.get(STORAGE_KEY);
-  if (result[STORAGE_KEY] == null) {
-    await browser.storage.sync.set({ [STORAGE_KEY]: DEFAULT_TOPICS });
-  }
-}
-
 export async function toggleTopic(topicId: string, name = '当前话题'): Promise<Topic> {
   const topics = await getTopics();
   const topic = topics[topicId] ?? { name, enabled: false };

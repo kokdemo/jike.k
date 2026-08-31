@@ -2,6 +2,41 @@
   max-width: 100% !important;
 }
 
+/* The hybrid topic route is a photo wall: widen its content without changing image rendering. */
+.jike-k-photo-wall-mode .topic-main {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+html.jike-k-photo-wall-mode .mantine-Container-root {
+  width: min(100%, calc(100vw - var(--jike-k-detail-panel-width) - 32px)) !important;
+  max-width: none !important;
+  margin-right: auto !important;
+  margin-left: auto !important;
+}
+
+html.jike-k-photo-wall-mode.jike-k-has-detail-panel .tabs-tabpane > div > div {
+  width: min(100%, calc(100vw - var(--jike-k-detail-panel-width) - 32px)) !important;
+  max-width: none !important;
+  margin-right: auto !important;
+  margin-left: auto !important;
+}
+
+/* The photo-wall topic header should scroll with the feed instead of sticking to the viewport. */
+html.jike-k-photo-wall-mode .topic-main header,
+html.jike-k-photo-wall-mode .topic-main [class*="sticky" i],
+html.jike-k-photo-wall-mode .topic-main [class*="header" i],
+html.jike-k-photo-wall-mode .mantine-Container-root header,
+html.jike-k-photo-wall-mode .mantine-Container-root [class*="sticky" i],
+html.jike-k-photo-wall-mode .mantine-Container-root [class*="header" i] {
+  position: static !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+  z-index: auto !important;
+}
+
 .jike-k-picture-mode .topic-left,
 .jike-k-picture-mode .message-card-header-left,
 .jike-k-picture-mode .topic-name,

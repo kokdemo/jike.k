@@ -2,3 +2,9 @@ node_modules/
 .output/
 .wxt/
 dist/
+.DS_Store
+.astro/
+.rebon/
+
+# Local Netlify folder
+.netlify

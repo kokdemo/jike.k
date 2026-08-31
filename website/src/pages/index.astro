@@ -1,0 +1,103 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+
+const features = [
+  {
+    title: '看图模式',
+    description: '专注浏览图片内容，减少信息流里的视觉干扰。',
+    detail: '在支持的话题页中打开看图模式，让图片回到阅读的中心。',
+  },
+  {
+    title: '双栏帖子详情',
+    description: '左侧保留信息流，右侧打开帖子详情，阅读不被打断。',
+    detail: '点击帖子后，详情在当前页面的右侧展开，支持拖动分割线调整宽度。',
+  },
+  {
+    title: '原生回复',
+    description: '继续使用即刻原生页面完成回复，不伪造接口。',
+    detail: '详情页使用即刻自己的回复控件，登录状态和发送流程都由即刻管理。',
+  },
+];
+
+const storeUrl = 'https://chromewebstore.google.com/detail/ceohoefapneebmoilaicplfenfkmfoni?authuser=0&hl=zh-CN';
+---
+
+<SiteLayout
+  title="jike.k｜让即刻，更适合在桌面上阅读"
+  description="jike.k 为即刻网页版提供看图模式、双栏帖子详情和原生回复体验。"
+>
+  <section class="hero section-shell">
+    <div class="hero-copy">
+      <h1>让即刻，更适合<br />在桌面上阅读</h1>
+      <p>看图模式、双栏详情，以及保留即刻原生回复体验。</p>
+      <a class="button button-primary button-download" href={storeUrl} target="_blank" rel="noreferrer">
+        免费下载
+      </a>
+    </div>
+
+    <div class="screenshot-showcase" aria-label="jike.k 双栏详情预览">
+      <figure class="screenshot-card screenshot-card-main">
+        <img
+          src="/screenshots/jike-hybrid-detail.webp"
+          alt="即刻照片墙与右侧帖子详情双栏界面"
+          width="1024"
+          height="610"
+          loading="eager"
+          decoding="async"
+        />
+        <figcaption>左侧浏览照片墙，右侧查看帖子详情并回复。</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="features section-shell" id="features">
+    <div class="section-heading">
+      <h2>核心功能</h2>
+      <p>只做和桌面阅读有关的改进。</p>
+    </div>
+    <div class="feature-list">
+      {features.map((feature) => (
+        <details class="feature-row">
+          <summary>
+            <span class="feature-icon" aria-hidden="true"></span>
+            <span class="feature-text"><strong>{feature.title}</strong><span>{feature.description}</span></span>
+            <span class="feature-chevron" aria-hidden="true">⌄</span>
+          </summary>
+          <p>{feature.detail}</p>
+        </details>
+      ))}
+    </div>
+
+    <div class="screenshot-grid" aria-label="产品界面截图">
+      <figure class="screenshot-card">
+        <img
+          src="/screenshots/jike-hybrid-feed.webp"
+          alt="即刻照片墙模式与双栏详情空状态"
+          width="1024"
+          height="610"
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption>照片墙模式：图片内容更集中，右侧面板随时可用。</figcaption>
+      </figure>
+      <figure class="screenshot-card">
+        <img
+          src="/screenshots/jike-profile-detail.webp"
+          alt="即刻个人主页与帖子详情双栏界面"
+          width="1024"
+          height="610"
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption>个人主页同样支持双栏阅读和原生回复。</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="closing section-shell">
+    <h2>在桌面上，让即刻阅读更舒服</h2>
+    <a class="button button-primary button-download" href={storeUrl} target="_blank" rel="noreferrer">
+      免费下载
+    </a>
+  </section>
+</SiteLayout>

@@ -4,7 +4,7 @@ export default defineConfig({
   outDir: 'dist',
   manifest: {
     name: 'jike.k',
-    description: '为即刻网页版提供可选的看图模式。',
+    description: '为即刻网页版提供看图模式和双栏帖子详情。',
     permissions: ['storage'],
     host_permissions: ['https://web.okjike.com/*'],
     icons: {
