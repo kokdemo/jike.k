@@ -1,4 +1,4 @@
 [build]
   base = "website"
-  command = "pnpm build"
+  command = "pnpm --dir .. install --frozen-lockfile && pnpm build"
   publish = "dist"
