@@ -3,19 +3,14 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 
 const features = [
   {
-    title: '看图模式',
-    description: '专注浏览图片内容，减少信息流里的视觉干扰。',
-    detail: '在支持的话题页中打开看图模式，让图片回到阅读的中心。',
+    title: '双栏配置',
+    description: '无需来回点击，浏览信息流的同时查看帖子详情。',
+    detail: '左侧保留信息流，右侧直接展开帖子详情，阅读和切换都在同一屏完成。',
   },
   {
-    title: '双栏帖子详情',
-    description: '左侧保留信息流，右侧打开帖子详情，阅读不被打断。',
-    detail: '点击帖子后，详情在当前页面的右侧展开，支持拖动分割线调整宽度。',
-  },
-  {
-    title: '原生回复',
-    description: '继续使用即刻原生页面完成回复，不伪造接口。',
-    detail: '详情页使用即刻自己的回复控件，登录状态和发送流程都由即刻管理。',
+    title: '图片墙模式',
+    description: '增加图片显示大小，让照片内容更容易看清。',
+    detail: '开启图片墙模式后，图片以更大的尺寸排列，浏览图片时更集中、更舒服。',
   },
 ];
 
@@ -23,13 +18,13 @@ const storeUrl = 'https://chromewebstore.google.com/detail/ceohoefapneebmoilaicp
 ---
 
 <SiteLayout
-  title="jike.k｜让即刻，更适合在桌面上阅读"
-  description="jike.k 为即刻网页版提供看图模式、双栏帖子详情和原生回复体验。"
+  title="提升桌面阅读体验的即刻插件｜jike.k"
+  description="jike.k 是一个提升桌面阅读体验的即刻插件，提供双栏配置和图片墙模式。"
 >
   <section class="hero section-shell">
     <div class="hero-copy">
-      <h1>让即刻，更适合<br />在桌面上阅读</h1>
-      <p>看图模式、双栏详情，以及保留即刻原生回复体验。</p>
+      <h1>即刻，更好阅读</h1>
+      <p>双栏配置，无需来回点击；图片墙模式，增加图片大小。</p>
       <a class="button button-primary button-download" href={storeUrl} target="_blank" rel="noreferrer">
         免费下载
       </a>
@@ -52,7 +47,7 @@ const storeUrl = 'https://chromewebstore.google.com/detail/ceohoefapneebmoilaicp
 
   <section class="features section-shell" id="features">
     <div class="section-heading">
-      <h2>核心功能</h2>
+      <h2>两个功能，刚好够用</h2>
       <p>只做和桌面阅读有关的改进。</p>
     </div>
     <div class="feature-list">
@@ -72,7 +67,7 @@ const storeUrl = 'https://chromewebstore.google.com/detail/ceohoefapneebmoilaicp
       <figure class="screenshot-card">
         <img
           src="/screenshots/jike-hybrid-feed.webp"
-          alt="即刻照片墙模式与双栏详情空状态"
+          alt="即刻图片墙模式与双栏详情空状态"
           width="1024"
           height="610"
           loading="lazy"
@@ -89,13 +84,13 @@ const storeUrl = 'https://chromewebstore.google.com/detail/ceohoefapneebmoilaicp
           loading="lazy"
           decoding="async"
         />
-        <figcaption>个人主页同样支持双栏阅读和原生回复。</figcaption>
+        <figcaption>个人主页同样支持双栏阅读。</figcaption>
       </figure>
     </div>
   </section>
 
   <section class="closing section-shell">
-    <h2>在桌面上，让即刻阅读更舒服</h2>
+    <h2>让即刻，在桌面上更好读</h2>
     <a class="button button-primary button-download" href={storeUrl} target="_blank" rel="noreferrer">
       免费下载
     </a>

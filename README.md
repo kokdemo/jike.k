@@ -1,6 +1,6 @@
 # jike.k
 
-基于 [WXT](https://wxt.dev/) 的 Manifest V3 浏览器扩展，为即刻网页版提供看图模式和双栏帖子详情。
+基于 [WXT](https://wxt.dev/) 的 Manifest V3 浏览器扩展，提升即刻网页版的桌面阅读体验，提供双栏配置和图片墙模式。
 
 ## 开发
 
